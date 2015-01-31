@@ -1,6 +1,7 @@
 -----------------------------------------------------------------------------
 library IEEE;
 use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 --Additional standard or custom libraries go here
 entity comparator is
  generic(
@@ -17,7 +18,23 @@ port(
 end entity comparator;
 architecture behavioral of comparator is
 --Signals and components go here
+	signal intDINL : integer;
+	signal intDINR : integer;
+	
 begin
---Behavioral design goes here
+	intDINL<=to_integer(unsigned(DINL));
+	intDINR<=to_integer(unsigned(DINR));
+	compute_diff: process(intDINL, intDINR)
+		variable temp : integer;
+	begin
+		temp:=intDINL-intDINR;
+		if (temp<0) then 
+			DOUT<= DINL(DATA_WIDTH-1 downto 0);
+			isGreaterEq<='0';
+		else
+			DOUT<=std_logic_vector(to_unsigned(temp,DATA_WIDTH-1));
+			isGreaterEq<='1';
+		end if;
+	end process;
+	
 end architecture behavioral;
------------------------------------------------------------------------------ 

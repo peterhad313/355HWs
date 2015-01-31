@@ -21,7 +21,7 @@ end entity divider;
 
 architecture structural_combinational of divider is
 	--Signals
-	type data_array is array(0 to (DIVIDEND_WIDTH-DIVISOR_WIDTH)) of std_logic_vector(DIVISOR_WIDTH-1 downto 0);
+	type data_array is array(0 to (DIVIDEND_WIDTH-DIVISOR_WIDTH)) of std_logic_vector(DIVISOR_WIDTH downto 0);
 	signal datal_array : data_array;
 	signal dout_temp : std_logic_vector(DIVISOR_WIDTH-1 downto 0);
 	signal dividend_temp : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
@@ -50,11 +50,12 @@ begin
 	end process;
 
 	--set first element of datal_array	
-	datal_array(0)<=dividend_temp(DIVIDEND_WIDTH-1 downto DIVIDEND_WIDTH-DIVISOR_WIDTH+1);
+	datal_array(0)<=dividend_temp(DIVIDEND_WIDTH-1 downto DIVIDEND_WIDTH-DIVISOR_WIDTH);
 	--network of comparators
 	COMPARE:
 	for i in 1 to (DIVIDEND_WIDTH-DIVISOR_WIDTH+1) generate
 		comp: comparator
+			generic map (DATA_WIDTH=>DIVISOR_WIDTH)
 			port map (DINL=>datal_array(i-1), DINR=>divisor_temp, DOUT=>dout_temp, isGreaterEq=>quotient(DIVIDEND_WIDTH-DIVISOR_WIDTH+1-i+1));
 			datal_array(i)<=dout_temp(DIVISOR_WIDTH-2 downto 0)&dividend_temp(DIVISOR_WIDTH-DIVISOR_WIDTH+1-i);
 	end generate;

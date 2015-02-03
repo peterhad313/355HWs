@@ -32,7 +32,7 @@ begin
 			DOUT<= DINL(DATA_WIDTH-1 downto 0);
 			isGreaterEq<='0';
 		else
-			DOUT<=std_logic_vector(to_unsigned(temp,DATA_WIDTH-1));
+			DOUT<=std_logic_vector(to_unsigned(temp,DATA_WIDTH));
 			isGreaterEq<='1';
 		end if;
 	end process;

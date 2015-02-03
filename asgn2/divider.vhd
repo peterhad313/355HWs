@@ -50,17 +50,17 @@ begin
 	end process;
 
 	--set first element of datal_array	
-	datal_array(0)<=dividend_temp(DIVIDEND_WIDTH-1 downto DIVIDEND_WIDTH-DIVISOR_WIDTH);
+	datal_array(0)<="0"&dividend_temp(DIVIDEND_WIDTH-1 downto DIVIDEND_WIDTH-DIVISOR_WIDTH); --concatenate '0' at beginning to get correct vector length
 	--network of comparators
 	COMPARE:
 	for i in 1 to (DIVIDEND_WIDTH-DIVISOR_WIDTH+1) generate
 		comp: comparator
 			generic map (DATA_WIDTH=>DIVISOR_WIDTH)
-			port map (DINL=>datal_array(i-1), DINR=>divisor_temp, DOUT=>dout_temp, isGreaterEq=>quotient(DIVIDEND_WIDTH-DIVISOR_WIDTH+1-i+1));
-			datal_array(i)<=dout_temp(DIVISOR_WIDTH-2 downto 0)&dividend_temp(DIVISOR_WIDTH-DIVISOR_WIDTH+1-i);
+			port map (DINL=>datal_array(i-1), DINR=>divisor_temp, DOUT=>dout_temp, isGreaterEq=>quotient(DIVIDEND_WIDTH-DIVISOR_WIDTH+1-i));
+			datal_array(i)<=dout_temp(DIVISOR_WIDTH-1 downto 0)&dividend_temp(DIVISOR_WIDTH-DIVISOR_WIDTH+1-i);
 	end generate;
 	--set remainder
-	remainder<=datal_array(DIVIDEND_WIDTH-DIVISOR_WIDTH);
+	remainder<=datal_array(DIVIDEND_WIDTH-DIVISOR_WIDTH)(DIVISOR_WIDTH-1 downto 0);
 
 end architecture structural_combinational;
 ----------------------------------------------------------------------------- 

@@ -21,7 +21,7 @@ end entity divider;
 
 architecture structural_combinational of divider is
 	--Signals
-	type data_array is array(0 to (DIVIDEND_WIDTH-DIVISOR_WIDTH+1)) of std_logic_vector(DIVISOR_WIDTH downto 0);
+	type data_array is array(0 to (DIVIDEND_WIDTH+1)) of std_logic_vector(DIVISOR_WIDTH downto 0);
 	signal datal_array : data_array;
 	signal dout_temp : std_logic_vector(DIVISOR_WIDTH-1 downto 0);
 	signal dividend_temp : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
@@ -46,23 +46,24 @@ begin
 		if start='1' then
 			dividend_temp<=dividend;
 			divisor_temp<=divisor;
-			--First few bits of quotient will be 0
-			for i in DIVIDEND_WIDTH-DIVISOR_WIDTH+1 to DIVIDEND_WIDTH-1 loop
-			quotient(i)<='0';
-			end loop;
 		end if;
 	end process;
 
 	--set first element of datal_array	
-	datal_array(0)<="0"&dividend_temp(DIVIDEND_WIDTH-1 downto DIVIDEND_WIDTH-DIVISOR_WIDTH); --concatenate '0' at beginning to get correct vector length
+	-- add divisor length 0's
+	datal_array(0)<="0000"&dividend_temp(DIVIDEND_WIDTH-1); --concatenate '0' at beginning to get correct vector length
 
 	--network of comparators
 	COMPARE:
-	for i in 1 to (DIVIDEND_WIDTH-DIVISOR_WIDTH+1) generate
+	for i in 1 to (DIVIDEND_WIDTH) generate
 		comp: comparator
 			generic map (DATA_WIDTH=>DIVISOR_WIDTH)
-			port map (DINL=>datal_array(i-1), DINR=>divisor_temp, DOUT=>dout_temp, isGreaterEq=>quotient(DIVIDEND_WIDTH-DIVISOR_WIDTH+1-i));
-			datal_array(i)<=dout_temp(DIVISOR_WIDTH-1 downto 0)&dividend_temp(DIVIDEND_WIDTH-DIVISOR_WIDTH+1-i);
+			port map (DINL=>datal_array(i-1),
+			DINR=>divisor_temp, 
+			DOUT=>dout_temp, 
+			isGreaterEq=>quotient(DIVIDEND_WIDTH-i));
+
+			datal_array(i)<=dout_temp(DIVISOR_WIDTH-1 downto 0)&dividend_temp(DIVIDEND_WIDTH-i);
 	end generate;
 	--set remainder
 	remainder<=datal_array(DIVIDEND_WIDTH-DIVISOR_WIDTH)(DIVISOR_WIDTH-1 downto 0);

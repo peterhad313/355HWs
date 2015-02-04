@@ -61,8 +61,9 @@ architecture arch of comb_divider_tb is
 
 					in2<=std_logic_vector(to_unsigned(num, DIVISOR_WIDTH));
 					tempStart<='1';
-					wait for 9 ns;
+					wait for 1 ns;
 					tempStart<='0';
+					wait for 8 ns;
 					write(my_line, to_integer(signed(in1)));
 				    write(my_line, string'(" / "));
 				    write(my_line, to_integer(signed(in2)));

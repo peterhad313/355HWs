@@ -20,6 +20,7 @@ architecture behavioral of comparator is
 --Signals and components go here
 	signal intDINL : integer;
 	signal intDINR : integer;
+	signal doutTemp: std_logic_vector (DATA_WIDTH -1 downto 0);
 	
 begin
 	intDINL<=to_integer(unsigned(DINL));
@@ -29,12 +30,13 @@ begin
 	begin
 		temp:=intDINL-intDINR;
 		if (temp<0) then 
-			DOUT<= DINL(DATA_WIDTH-1 downto 0);
+			doutTemp<= DINL(DATA_WIDTH-1 downto 0);
 			isGreaterEq<='0';
 		else
-			DOUT<=std_logic_vector(to_unsigned(temp,DATA_WIDTH));
+			doutTemp<=std_logic_vector(to_unsigned(temp,DATA_WIDTH));
 			isGreaterEq<='1';
 		end if;
 	end process;
+	DOUT<=doutTemp;
 	
 end architecture behavioral;

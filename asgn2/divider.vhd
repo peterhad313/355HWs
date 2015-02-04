@@ -2,7 +2,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use WORK.divider_const.all;
-
+use ieee.numeric_std.all;
 
 entity divider is
 port(
@@ -49,8 +49,7 @@ begin
 			--First few bits of quotient will be 0
 			for i in DIVIDEND_WIDTH-DIVISOR_WIDTH+1 to DIVIDEND_WIDTH-1 loop
 			quotient(i)<='0';
-	end loop;
-
+			end loop;
 		end if;
 	end process;
 
@@ -67,6 +66,18 @@ begin
 	end generate;
 	--set remainder
 	remainder<=datal_array(DIVIDEND_WIDTH-DIVISOR_WIDTH)(DIVISOR_WIDTH-1 downto 0);
+
+	--process for overflow check
+	process(start, dividend, divisor)
+	begin
+		--set overflow
+		if (to_integer(unsigned(divisor))=0) then
+			overflow<='1';
+		else 
+			overflow<='0';
+		end if;
+	end process;
+
 
 end architecture structural_combinational;
 ----------------------------------------------------------------------------- 

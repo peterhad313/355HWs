@@ -35,7 +35,7 @@ architecture structural_combinational of divider is
 	--Components
 	component comparator
  	generic(
- 		DATA_WIDTH : natural := 16
+ 		DATA_WIDTH : natural := 4
  		);
 	port(
  		DINL : in std_logic_vector (DATA_WIDTH downto 0);

@@ -66,7 +66,6 @@ begin
 			quotient<= quo_temp;
 		  remainder <= rem_temp;
 		end if;
-		
 		end if;
 	end process;
 
@@ -87,7 +86,6 @@ datal_array(0)<="0000"&dividend(DIVIDEND_WIDTH-1); --concatenate '0' at beginnin
 ----
 datal_array(i) <= comp_out_array(i)&dividend(DIVIDEND_WIDTH-1-i);
 --SEDA_COMMENT: AT THE LAST ITERATION THIS WILL PLACE THE LAST DINL value to the array
-	
 	end generate;
 --	
 --	--SEDA_COMMENT: NEED TO ASSIGN THE LAST BIT OF DIVISION RESULT HERE, USING THE LAST VALUE OF THE ARRAY

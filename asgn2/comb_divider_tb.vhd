@@ -65,8 +65,7 @@ architecture arch of comb_divider_tb is
 					tempStart<='0';
 					
 					wait for 2 ns;
-					
-					--Format output
+				
 					write(my_line, to_integer(signed(in1)));
 				    write(my_line, string'(" / "));
 				    write(my_line, to_integer(signed(in2)));

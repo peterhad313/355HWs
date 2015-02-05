@@ -21,15 +21,21 @@ end entity divider;
 
 architecture structural_combinational of divider is
 	--Signals
-	type data_array is array(0 to (DIVIDEND_WIDTH-DIVISOR_WIDTH+1)) of std_logic_vector(DIVISOR_WIDTH downto 0);
+	type data_array is array(0 to (DIVIDEND_WIDTH-1)) of std_logic_vector(DIVISOR_WIDTH downto 0);
+ --SEDA_COMMENT: I introduced an additional array for comparator outputs
+ 	type data_array_short is array(1 to DIVIDEND_WIDTH) of std_logic_vector(DIVISOR_WIDTH-1 downto 0);
 	signal datal_array : data_array;
+  signal comp_out_array: data_array_short;
 	signal dout_temp : std_logic_vector(DIVISOR_WIDTH-1 downto 0);
-	signal dividend_temp : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
-	signal divisor_temp : std_logic_vector (DIVISOR_WIDTH - 1 downto 0);
+--	signal dividend_temp : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
+--	signal divisor_temp : std_logic_vector (DIVISOR_WIDTH - 1 downto 0);
+	signal quo_temp : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
+  signal rem_temp : std_logic_vector (DIVISOR_WIDTH - 1 downto 0);
+
 	--Components
 	component comparator
  	generic(
- 		DATA_WIDTH : natural := 4
+ 		DATA_WIDTH : natural := 16
  		);
 	port(
  		DINL : in std_logic_vector (DATA_WIDTH downto 0);
@@ -44,39 +50,67 @@ begin
 	process(start,dividend,divisor)
 	begin
 		if start='1' then
-			dividend_temp<=dividend;
-			divisor_temp<=divisor;
-			--First few bits of quotient will be 0
-			for i in DIVIDEND_WIDTH-DIVISOR_WIDTH+1 to DIVIDEND_WIDTH-1 loop
-			quotient(i)<='0';
-			end loop;
+		  
+		  
+--		  overflow <= divisor(0);
+--			dividend_temp<=dividend;
+--			divisor_temp<=divisor;
+--SEDA_COMMENT: need to compute overflow with start button control as well
+--SEDA_COMMENT: tried controlling release of output rather than input			
+		if (to_integer(unsigned(divisor))=0) then
+			overflow<='1';
+			quotient<= quo_temp;
+		  remainder <= rem_temp;
+		else 
+			overflow<='0';
+			quotient<= quo_temp;
+		  remainder <= rem_temp;
+		end if;
+		
 		end if;
 	end process;
 
 	--set first element of datal_array	
-	datal_array(0)<="0"&dividend_temp(DIVIDEND_WIDTH-1 downto DIVIDEND_WIDTH-DIVISOR_WIDTH); --concatenate '0' at beginning to get correct vector length
-
-	--network of comparators
+	-- add divisor length 0's
+datal_array(0)<="0000"&dividend(DIVIDEND_WIDTH-1); --concatenate '0' at beginning to get correct vector length
+ 
+--
+--	--network of comparators
 	COMPARE:
-	for i in 1 to (DIVIDEND_WIDTH-DIVISOR_WIDTH+1) generate
+	for i in 1 to (DIVIDEND_WIDTH-1) generate
 		comp: comparator
 			generic map (DATA_WIDTH=>DIVISOR_WIDTH)
-			port map (DINL=>datal_array(i-1), DINR=>divisor_temp, DOUT=>dout_temp, isGreaterEq=>quotient(DIVIDEND_WIDTH-DIVISOR_WIDTH+1-i));
-			datal_array(i)<=dout_temp(DIVISOR_WIDTH-1 downto 0)&dividend_temp(DIVIDEND_WIDTH-DIVISOR_WIDTH+1-i);
+			port map (DINL=>datal_array(i-1),
+			DINR=>divisor, 
+			DOUT=>comp_out_array(i), 
+			isGreaterEq=>quo_temp(DIVIDEND_WIDTH-i));
+----
+datal_array(i) <= comp_out_array(i)&dividend(DIVIDEND_WIDTH-1-i);
+--SEDA_COMMENT: AT THE LAST ITERATION THIS WILL PLACE THE LAST DINL value to the array
+	
 	end generate;
-	--set remainder
-	remainder<=datal_array(DIVIDEND_WIDTH-DIVISOR_WIDTH)(DIVISOR_WIDTH-1 downto 0);
+--	
+--	--SEDA_COMMENT: NEED TO ASSIGN THE LAST BIT OF DIVISION RESULT HERE, USING THE LAST VALUE OF THE ARRAY
+	comp: comparator
+			generic map (DATA_WIDTH=>DIVISOR_WIDTH)
+			port map (DINL=>datal_array(DIVIDEND_WIDTH-1),
+			DINR=>divisor, 
+			DOUT=>rem_temp, 
+			isGreaterEq=>quo_temp(0));
 
-	--process for overflow check
-	process(start, dividend, divisor)
-	begin
-		--set overflow
-		if (to_integer(unsigned(divisor))=0) then
-			overflow<='1';
-		else 
-			overflow<='0';
-		end if;
-	end process;
+	--set remainder
+----	remainder<=datal_array(DIVIDEND_WIDTH-DIVISOR_WIDTH)(DIVISOR_WIDTH-1 downto 0);
+----
+----process for overflow check
+----	process(start, dividend, divisor)
+----	begin
+--		--set overflow
+----		if (to_integer(unsigned(divisor))=0) then
+----			overflow<='1';
+----		else 
+----			overflow<='0';
+----		end if;
+----	end process;
 
 
 end architecture structural_combinational;

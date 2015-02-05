@@ -8,9 +8,7 @@ use IEEE.numeric_std.all;
 
 
 entity comb_divider_tb is
-  port (
-	sign : out std_logic
-  ) ;
+  --No inputs or outputs
 end entity ; -- comb_divider_tb
 
 
@@ -38,31 +36,37 @@ architecture arch of comb_divider_tb is
 	begin
 
 		c1:divider port map(tempStart,in1,in2,tempQuotient,tempRemainder,tempOverflow);
-		sign<='1';
 
 		process is
 			variable my_line : line;
-			file infile: text open read_mode is "16bit.in";
-			file outfile: text open write_mode is "output.txt";
+			file infile: text open read_mode is "32bit.in";
+			file outfile: text open write_mode is "32bit.out";
 			variable num : integer;
 			begin
 				write(my_line, string'("Beginning to test..."));
 				writeline(outfile, my_line);
+
 				while not (endfile(infile)) loop
+					tempStart<='0';
 					--first int
 					readline(infile, my_line);
 					read(my_line, num);
 
 					in1<=std_logic_vector(to_unsigned(num, DIVIDEND_WIDTH));
-
+          
 					--second int
 					readline(infile, my_line);
 					read(my_line, num);
 
 					in2<=std_logic_vector(to_unsigned(num, DIVISOR_WIDTH));
+					wait for 2 ns;
 					tempStart<='1';
-					wait for 9 ns;
+					wait for 1 ns;
 					tempStart<='0';
+					
+					wait for 2 ns;
+					
+					--Format output
 					write(my_line, to_integer(signed(in1)));
 				    write(my_line, string'(" / "));
 				    write(my_line, to_integer(signed(in2)));

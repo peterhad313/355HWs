@@ -7,7 +7,7 @@ use ieee.numeric_std.all;
 entity divider is
 port(
 	--Inputs
-	-- clk : in std_logic;
+	clk : in std_logic;
 	--COMMENT OUT clk signal for Part A.
  	start : in std_logic;
  	dividend : in std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
@@ -84,4 +84,19 @@ begin
 			isGreaterEq=>quo_temp(0));
 
 end architecture structural_combinational;
------------------------------------------------------------------------------ 
+-----------------------------------------------------------------------------
+architecture behavioral_sequential of divider is
+ 
+ 	signal comparatorIN : std_logic_vector(DIVISOR_WIDTH-1 downto 0);
+ 	signal comparatorOUT : std_logic_vector(DIVISOR_WIDTH-1 downto 0);
+ 	signal comparatorResult : std_logic;
+ 
+ begin
+ 	comp: comparator
+			generic map (DATA_WIDTH=>DIVISOR_WIDTH)
+			port map (DINL=>comparatorIN, DINR=>divisor, DOUT=>comparatorOUT, isGreaterEq=>comparatorResult);
+
+	
+
+ 
+ end architecture ; -- behavioral_sequential 

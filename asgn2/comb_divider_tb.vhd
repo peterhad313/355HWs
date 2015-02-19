@@ -17,6 +17,7 @@ architecture arch of comb_divider_tb is
 
 	component divider is
 	port(
+	 clk : in std_logic;
 	 start : in std_logic;
 	 dividend : in std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
 	 divisor : in std_logic_vector (DIVISOR_WIDTH - 1 downto 0);
@@ -27,7 +28,7 @@ architecture arch of comb_divider_tb is
 	 );
 	end component divider;
 	for all : divider use entity WORK.divider (behavioral_sequential);
-
+		signal clk : std_logic := '0';
 		signal in1 : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
 		signal in2 : std_logic_vector (DIVISOR_WIDTH - 1 downto 0);
 		signal tempQuotient : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
@@ -35,8 +36,9 @@ architecture arch of comb_divider_tb is
 		signal tempOverflow : std_logic;
 		signal tempStart : std_logic;
 	begin
+		clk <= not clk after 5 ns;
 
-		c1:divider port map(tempStart,in1,in2,tempQuotient,tempRemainder,tempOverflow);
+		c1:divider port map(clk,tempStart,in1,in2,tempQuotient,tempRemainder,tempOverflow);
 
 		process is
 			variable my_line : line;
@@ -62,7 +64,7 @@ architecture arch of comb_divider_tb is
 					in2<=std_logic_vector(to_unsigned(num, DIVISOR_WIDTH));
 					wait for 2 ns;
 					tempStart<='1';
-					wait for 1 ns;
+					wait for 95 ns;
 					tempStart<='0';
 					
 					wait for 2 ns;

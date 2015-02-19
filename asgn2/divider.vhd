@@ -117,20 +117,12 @@ architecture behavioral_sequential of divider is
  begin
 	process(start,dividend,divisor)
 	--Variables
-	variable count : integer := 1;
+	variable count : integer;
 	begin
 		--start button and overflow
---		if start='1' then		
---			if (to_integer(unsigned(divisor))=0) then
---				overflow<='1';
---				quotient<= quo_temp;
---			  	remainder <= rem_temp;
---			else 
---				overflow<='0';
---				quotient<= quo_temp;
---			  	remainder <= rem_temp;
---			end if;
---		end if;
+		if start='1' then		
+			count:=1;
+		end if;
 
 		--set first element of datal_array	
 		datal_array(0)<="00000000"&dividend(DIVIDEND_WIDTH-1); --concatenate '0' at beginning to get correct vector length

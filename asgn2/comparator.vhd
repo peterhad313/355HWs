@@ -19,13 +19,13 @@ end entity comparator;
 
 architecture behavioral of comparator is
 	--Signals and components go here
-
-	signal doutTemp: integer;
 begin
 	compute_diff: process(DINL, DINR)
 	variable temp : integer;
 	variable intDINL : integer;
 	variable intDINR : integer;
+	variable doutTemp: integer;
+
 	begin
 		--convert to integers
 		intDINL:=to_integer(unsigned(DINL));
@@ -34,14 +34,15 @@ begin
 		temp:=intDINL-intDINR;
 		--if less than, pass on DINL
 		if (temp<0) then 
-			doutTemp<= intDINL;
+			doutTemp:= intDINL;
 			isGreaterEq<='0';
 		--Else subtract and set the output to 1
 		else
-			doutTemp<= temp;
+			doutTemp:= temp;
 			isGreaterEq<='1';
 		end if;
+		DOUT<=std_logic_vector(to_signed(doutTemp,DATA_WIDTH));
+
 	end process;
 	--Set DOUT from temp
-	DOUT<=std_logic_vector(to_unsigned(doutTemp,DATA_WIDTH));
 end architecture behavioral;

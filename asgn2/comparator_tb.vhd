@@ -17,7 +17,7 @@ architecture arch of comparator_tb is
 
 	component comparator is
 	generic(
-		DATA_WIDTH : natural := 4
+		DATA_WIDTH : natural := 8
 	);
 	port(
 		--Inputs
@@ -29,9 +29,9 @@ architecture arch of comparator_tb is
 	);
 	end component;
 
-	signal inLVariable : std_logic_vector (4 downto 0);
-	signal inRVariable : std_logic_vector (4 -1 downto 0);
-	signal outTemp : std_logic_vector (4 -1 downto 0);
+	signal inLVariable : std_logic_vector (8 downto 0);
+	signal inRVariable : std_logic_vector (8 -1 downto 0);
+	signal outTemp : std_logic_vector (8 -1 downto 0);
 	signal greaterTemp : std_logic;
 
 	begin
@@ -40,13 +40,13 @@ architecture arch of comparator_tb is
 
 		process is
 		begin
-			inLVariable<="01111";
-			inRVariable<="0001";
+			inLVariable<="000000001";
+			inRVariable<="00000001";
 			wait for 10 ns;
-			inRVariable<="0101";
+			inRVariable<="10100101";
 			wait for 10 ns;
-			inLVariable<="00001";
-			inRVariable<="0010";
+			inLVariable<="101000001";
+			inRVariable<="11110010";
 			wait;
 			
 		end process;

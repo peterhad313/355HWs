@@ -115,6 +115,10 @@ architecture behavioral_sequential of divider is
 	end component comparator;
  
  begin
+ 	comp: comparator 
+ 		generic map(DATA_WIDTH=>DIVISOR_WIDTH)
+ 		port map(DINL=>comparatorIN,DINR=>divisor,DOUT=>comparatorOUT,isGreaterEq=>comparatorResult);
+
 	process(start,dividend,divisor)
 	--Variables
 	variable count : integer;

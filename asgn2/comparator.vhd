@@ -5,7 +5,7 @@ use IEEE.numeric_std.all;
 
 entity comparator is
 	generic(
-		DATA_WIDTH : natural := 4
+		DATA_WIDTH : natural := 8
 	);
 	port(
 		--Inputs

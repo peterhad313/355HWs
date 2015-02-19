@@ -26,6 +26,7 @@ architecture arch of comb_divider_tb is
 	 overflow : out std_logic
 	 );
 	end component divider;
+	for all : divider use entity WORK.divider (behavioral_sequential);
 
 		signal in1 : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
 		signal in2 : std_logic_vector (DIVISOR_WIDTH - 1 downto 0);

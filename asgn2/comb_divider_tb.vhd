@@ -42,8 +42,8 @@ architecture arch of comb_divider_tb is
 
 		process is
 			variable my_line : line;
-			--file infile: text open read_mode is "C:\Users\Peter\Documents\GitHub\355HWs\asgn2\16bit.in";
-			file infile: text open read_mode is "16bit.in";
+			file infile: text open read_mode is "C:\Users\Peter\Documents\GitHub\355HWs\asgn2\16bit.in";
+			--file infile: text open read_mode is "16bit.in";
 			file outfile: text open write_mode is "16bit.out";
 			variable num : integer;
 			begin
@@ -65,10 +65,10 @@ architecture arch of comb_divider_tb is
 					in2<=std_logic_vector(to_unsigned(num, DIVISOR_WIDTH));
 					wait for 2 ns;
 					tempStart<='1';
-					wait for 400 ns;
+					wait for 180 ns;
 					tempStart<='0';
 					
-					wait for 2 ns;
+					wait for 17 ns;
 				
 					write(my_line, to_integer(signed(in1)));
 				    write(my_line, string'(" / "));

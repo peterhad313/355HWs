@@ -91,11 +91,12 @@ end architecture structural_combinational;
 architecture behavioral_sequential of divider is
 
 	--signal previousCompare : std_logic_vector (DIVISOR_WIDTH-1 downto 0);
-	signal quo_temp : std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
+	signal quo_temp : std_logic_vector (DIVIDEND_WIDTH downto 0);
   	signal rem_temp : std_logic_vector (DIVISOR_WIDTH - 1 downto 0);
   	signal comparatorIN : std_logic_vector(DIVISOR_WIDTH downto 0);
  	signal comparatorOUT : std_logic_vector(DIVISOR_WIDTH-1 downto 0);
  	signal comparatorResult : std_logic;
+ 	signal previousCompare : std_logic_vector(DIVISOR_WIDTH-1 downto 0) := (OTHERS=>'0');
 
  	--Components
 	component comparator
@@ -109,47 +110,57 @@ architecture behavioral_sequential of divider is
  		isGreaterEq : out std_logic := '0'
  		);
 	end component comparator;
+
+	component ffarray is
+	  generic (
+	    n   : integer
+	  );
+	  port (
+		clk	: in  std_logic;
+		d	: in  std_logic_vector(n-1 downto 0);
+		q	: out  std_logic_vector(n-1 downto 0)
+	  ) ;
+	end component; -- ffarray
  
 
  begin
  	comp: comparator 
  		generic map(DATA_WIDTH=>DIVISOR_WIDTH)
  		port map(DINL=>comparatorIN,DINR=>divisor,DOUT=>comparatorOUT,isGreaterEq=>comparatorResult);
-
+ 	ff: ffarray
+ 		generic map (n=>DIVISOR_WIDTH)
+ 		port map (clk=>clk, d=>comparatorOUT,q=>previousCompare);
 	process(start,dividend,divisor,clk)
 	--Variables
 	variable count : integer:=1;
-	variable previousCompare : std_logic_vector(DIVISOR_WIDTH-1 downto 0) := (OTHERS=>'0');
 	begin
 		--comparator loop
 		if(rising_edge(clk)) then
-			if (count<=DIVIDEND_WIDTH-1) and (start='1') then
-			--set inputs and outputs to comparator
-			comparatorIN<=previousCompare&dividend(DIVIDEND_WIDTH-count);
-			previousCompare:=comparatorOUT;
-			quo_temp(DIVIDEND_WIDTH-count)<=comparatorResult;
+			if (start='0') then
+				count:=1;
+				comparatorIN<=(OTHERS=>'0');
+			elsif (count<=DIVIDEND_WIDTH) and (start='1') then
+				--set inputs and outputs to comparator
+				comparatorIN<=previousCompare&dividend(DIVIDEND_WIDTH-count);
+				quo_temp(DIVIDEND_WIDTH-count+1)<=comparatorResult;
 
-			--increment count
-			count:=count+1;
-			end if;
-		
-			if (count = DIVIDEND_WIDTH) and (start='1') then 
-			--Assign last bit of division with one final comparator
-			comparatorIN<=comparatorOUT&dividend(DIVIDEND_WIDTH-count);
-			rem_temp<=comparatorOUT;
-			quo_temp(0)<=comparatorResult;
+				--increment count
+				count:=count+1;
+			elsif (count = DIVIDEND_WIDTH+1) and (start='1') then 
+				quo_temp(0)<= comparatorResult;
 				--Assign overflow
 				if (to_integer(unsigned(divisor))=0) then
 					overflow<='1';
-					quotient<= quo_temp;
-				  	remainder <= rem_temp;
 				else 
 					overflow<='0';
-					quotient<= quo_temp;
-				  	remainder <= rem_temp;
 				end if;
-			count:=1;
-		end if;
+				count:=count+1;
+			else
+				quotient<= quo_temp(DIVIDEND_WIDTH-1 downto 0);
+			  	remainder <= previousCompare;
+
+				count:=1;
+			end if;
 		end if;
 		
 	end process;

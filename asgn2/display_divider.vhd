@@ -7,6 +7,7 @@ use ieee.numeric_std.all;
 entity display_divider is
 port(
 	--Inputs
+	clk : in std_logic;
 	start : in std_logic;
  	dividend : in std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
  	divisor : in std_logic_vector (DIVISOR_WIDTH - 1 downto 0);
@@ -28,7 +29,7 @@ signal overflow : std_logic;
 component divider 
 port(
 	--Inputs
-	-- clk : in std_logic;
+	clk : in std_logic;
 	--COMMENT OUT clk signal for Part A.
  	start : in std_logic;
  	dividend : in std_logic_vector (DIVIDEND_WIDTH - 1 downto 0);
@@ -39,13 +40,15 @@ port(
  	overflow : out std_logic
  	);
  end component;
+for all : divider use entity WORK.divider (behavioral_sequential);
 
 begin
 	--Flip start signal
 	start_not <= not start;
 	--Calculate quotient and remainder
 	div: divider
-		port map (start=>start_not, dividend=>dividend, divisor=>divisor, quotient=>quotient, remainder=>remainder, overflow=>overflow);
+		port map (clk=>clk, start=>start_not, dividend=>dividend, divisor=>divisor, quotient=>quotient, remainder=>remainder, overflow=>overflow);
+	
 	--Display Quotient
 	GEN_LED_Q: 
 	for i in 1 to ((DIVIDEND_WIDTH)/4) generate

@@ -42,8 +42,8 @@ architecture arch of comb_divider_tb is
 
 		process is
 			variable my_line : line;
-			file infile: text open read_mode is "C:\Users\Peter\Documents\GitHub\355HWs\asgn2\16bit.in";
-			--file infile: text open read_mode is "16bit.in";
+			--file infile: text open read_mode is "C:\Users\Peter\Documents\GitHub\355HWs\asgn2\16bit.in";
+			file infile: text open read_mode is "16bit.in";
 			file outfile: text open write_mode is "16bit.out";
 			variable num : integer;
 			begin

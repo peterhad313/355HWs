@@ -61,7 +61,7 @@ begin
 	end process;
 
 	--set first element of datal_array	
-	datal_array(0)<="00000000"&dividend(DIVIDEND_WIDTH-1); --concatenate '0' at beginning to get correct vector length
+	datal_array(0)<="0000000000000000"&dividend(DIVIDEND_WIDTH-1); --concatenate '0' at beginning to get correct vector length
  
 
 	--network of comparators

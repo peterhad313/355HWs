@@ -41,7 +41,7 @@ architecture arch of comparator_tb is
 		process is
 		begin
 			inLVariable<="000000001";
-			inRVariable<="00000001";
+			inRVariable<="00000100";
 			wait for 10 ns;
 			inRVariable<="10100101";
 			wait for 10 ns;
